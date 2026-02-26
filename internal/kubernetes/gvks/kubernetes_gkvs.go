@@ -55,6 +55,14 @@ var HostPool = schema.GroupVersionKind{
 
 var HostPoolList = listGVK(HostPool)
 
+var Subnet = schema.GroupVersionKind{
+	Group:   "osac.openshift.io",
+	Version: "v1alpha1",
+	Kind:    "Subnet",
+}
+
+var SubnetList = listGVK(Subnet)
+
 func listGVK(gvk schema.GroupVersionKind) schema.GroupVersionKind {
 	gvk.Kind = gvk.Kind + "List"
 	return gvk

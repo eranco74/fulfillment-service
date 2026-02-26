@@ -21,3 +21,6 @@ import (
 
 // ComputeInstanceTenant is the annotation where the fulfillment API will write the tenant of the compute instance.
 var ComputeInstanceTenant = fmt.Sprintf("%s/tenant", gvks.ComputeInstance.Group)
+
+// SubnetTenant is the annotation where the fulfillment API will write the tenant of the subnet.
+var SubnetTenant = fmt.Sprintf("%s/tenant", gvks.Subnet.Group)

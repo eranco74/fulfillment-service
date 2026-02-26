@@ -30,3 +30,6 @@ var HostUuid = fmt.Sprintf("%s/%s", gvks.Host.Group, "host-uuid")
 
 // HostPoolUuid is the label where the fulfillment API will write the identifier of the host pool.
 var HostPoolUuid = fmt.Sprintf("%s/%s", gvks.HostPool.Group, "hostpool-uuid")
+
+// SubnetUuid is the label where the fulfillment API will write the identifier of the subnet.
+var SubnetUuid = fmt.Sprintf("%s/%s", gvks.Subnet.Group, "subnet-uuid")
