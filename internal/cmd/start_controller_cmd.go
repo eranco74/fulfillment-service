@@ -42,6 +42,7 @@ import (
 	"github.com/osac-project/fulfillment-service/internal/controllers/computeinstance"
 	"github.com/osac-project/fulfillment-service/internal/controllers/host"
 	"github.com/osac-project/fulfillment-service/internal/controllers/hostpool"
+	"github.com/osac-project/fulfillment-service/internal/controllers/subnet"
 	internalhealth "github.com/osac-project/fulfillment-service/internal/health"
 	shtdwn "github.com/osac-project/fulfillment-service/internal/shutdown"
 	"github.com/osac-project/fulfillment-service/internal/version"
@@ -361,6 +362,43 @@ func (r *startControllerRunner) run(cmd *cobra.Command, argv []string) error {
 			r.logger.InfoContext(
 				ctx,
 				"Host pool reconciler failed",
+				slog.Any("error", err),
+			)
+		}
+	}()
+
+	// Create the subnet reconciler:
+	r.logger.InfoContext(ctx, "Creating subnet reconciler")
+	subnetReconcilerFunction, err := subnet.NewFunction().
+		SetLogger(r.logger).
+		SetConnection(r.client).
+		SetHubCache(hubCache).
+		Build()
+	if err != nil {
+		return fmt.Errorf("failed to create subnet reconciler function: %w", err)
+	}
+	subnetReconciler, err := controllers.NewReconciler[*privatev1.Subnet]().
+		SetLogger(r.logger).
+		SetName("subnet").
+		SetClient(r.client).
+		SetFunction(subnetReconcilerFunction).
+		SetEventFilter("has(event.subnet) || (has(event.hub) && event.type == EVENT_TYPE_OBJECT_CREATED)").
+		SetHealthReporter(healthAggregator).
+		Build()
+	if err != nil {
+		return fmt.Errorf("failed to create subnet reconciler: %w", err)
+	}
+
+	// Start the subnet reconciler:
+	r.logger.InfoContext(ctx, "Starting subnet reconciler")
+	go func() {
+		err := subnetReconciler.Start(ctx)
+		if err == nil || errors.Is(err, context.Canceled) {
+			r.logger.InfoContext(ctx, "Subnet reconciler finished")
+		} else {
+			r.logger.InfoContext(
+				ctx,
+				"Subnet reconciler failed",
 				slog.Any("error", err),
 			)
 		}
