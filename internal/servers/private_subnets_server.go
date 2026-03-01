@@ -290,7 +290,8 @@ func (s *PrivateSubnetsServer) validateVirtualNetworkReference(ctx context.Conte
 		SetId(virtualNetworkID).
 		Do(ctx)
 	if err != nil {
-		if grpcstatus.Code(err) == grpccodes.NotFound {
+		var notFoundErr *dao.ErrNotFound
+		if errors.As(err, &notFoundErr) {
 			return grpcstatus.Errorf(grpccodes.InvalidArgument,
 				"parent VirtualNetwork '%s' does not exist", virtualNetworkID)
 		}
