@@ -565,6 +565,32 @@ func (c *startGrpcServerCommandRunner) run(cmd *cobra.Command, argv []string) er
 	}
 	ffv1.RegisterComputeInstancesServer(grpcServer, computeInstancesServer)
 
+	// Create the virtual networks server:
+	c.logger.InfoContext(ctx, "Creating virtual networks server")
+	virtualNetworksServer, err := servers.NewVirtualNetworksServer().
+		SetLogger(c.logger).
+		SetNotifier(notifier).
+		SetAttributionLogic(publicAttributionLogic).
+		SetTenancyLogic(publicTenancyLogic).
+		Build()
+	if err != nil {
+		return fmt.Errorf("failed to create virtual networks server: %w", err)
+	}
+	ffv1.RegisterVirtualNetworksServer(grpcServer, virtualNetworksServer)
+
+	// Create the subnets server:
+	c.logger.InfoContext(ctx, "Creating subnets server")
+	subnetsServer, err := servers.NewSubnetsServer().
+		SetLogger(c.logger).
+		SetNotifier(notifier).
+		SetAttributionLogic(publicAttributionLogic).
+		SetTenancyLogic(publicTenancyLogic).
+		Build()
+	if err != nil {
+		return fmt.Errorf("failed to create subnets server: %w", err)
+	}
+	ffv1.RegisterSubnetsServer(grpcServer, subnetsServer)
+
 	// Create the private compute instances server:
 	c.logger.InfoContext(ctx, "Creating private compute instances server")
 	privateComputeInstancesServer, err := servers.NewPrivateComputeInstancesServer().
@@ -590,6 +616,32 @@ func (c *startGrpcServerCommandRunner) run(cmd *cobra.Command, argv []string) er
 		return fmt.Errorf("failed to create hubs server: %w", err)
 	}
 	privatev1.RegisterHubsServer(grpcServer, privateHubsServer)
+
+	// Create the private virtual networks server:
+	c.logger.InfoContext(ctx, "Creating private virtual networks server")
+	privateVirtualNetworksServer, err := servers.NewPrivateVirtualNetworksServer().
+		SetLogger(c.logger).
+		SetNotifier(notifier).
+		SetAttributionLogic(privateAttributionLogic).
+		SetTenancyLogic(privateTenancyLogic).
+		Build()
+	if err != nil {
+		return fmt.Errorf("failed to create private virtual networks server: %w", err)
+	}
+	privatev1.RegisterVirtualNetworksServer(grpcServer, privateVirtualNetworksServer)
+
+	// Create the private subnets server:
+	c.logger.InfoContext(ctx, "Creating private subnets server")
+	privateSubnetsServer, err := servers.NewPrivateSubnetsServer().
+		SetLogger(c.logger).
+		SetNotifier(notifier).
+		SetAttributionLogic(privateAttributionLogic).
+		SetTenancyLogic(privateTenancyLogic).
+		Build()
+	if err != nil {
+		return fmt.Errorf("failed to create private subnets server: %w", err)
+	}
+	privatev1.RegisterSubnetsServer(grpcServer, privateSubnetsServer)
 
 	// Create the events server:
 	c.logger.InfoContext(ctx, "Creating events server")
