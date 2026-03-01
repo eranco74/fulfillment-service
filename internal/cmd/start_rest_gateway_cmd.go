@@ -172,6 +172,22 @@ func (c *startRestGatewayCommandRunner) run(cmd *cobra.Command, argv []string) e
 	if err != nil {
 		return err
 	}
+	err = api.RegisterNetworkClassesHandler(ctx, gatewayMux, c.grpcClient)
+	if err != nil {
+		return err
+	}
+	err = api.RegisterVirtualNetworksHandler(ctx, gatewayMux, c.grpcClient)
+	if err != nil {
+		return err
+	}
+	err = api.RegisterSubnetsHandler(ctx, gatewayMux, c.grpcClient)
+	if err != nil {
+		return err
+	}
+	err = api.RegisterSecurityGroupsHandler(ctx, gatewayMux, c.grpcClient)
+	if err != nil {
+		return err
+	}
 
 	// Register the private API service handlers:
 	err = privateapi.RegisterClusterTemplatesHandler(ctx, gatewayMux, c.grpcClient)
@@ -207,6 +223,22 @@ func (c *startRestGatewayCommandRunner) run(cmd *cobra.Command, argv []string) e
 		return err
 	}
 	err = privateapi.RegisterComputeInstancesHandler(ctx, gatewayMux, c.grpcClient)
+	if err != nil {
+		return err
+	}
+	err = privateapi.RegisterNetworkClassesHandler(ctx, gatewayMux, c.grpcClient)
+	if err != nil {
+		return err
+	}
+	err = privateapi.RegisterVirtualNetworksHandler(ctx, gatewayMux, c.grpcClient)
+	if err != nil {
+		return err
+	}
+	err = privateapi.RegisterSubnetsHandler(ctx, gatewayMux, c.grpcClient)
+	if err != nil {
+		return err
+	}
+	err = privateapi.RegisterSecurityGroupsHandler(ctx, gatewayMux, c.grpcClient)
 	if err != nil {
 		return err
 	}
