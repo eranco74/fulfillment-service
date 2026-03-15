@@ -76,6 +76,24 @@ message ComputeInstanceSpec {
 
   // Name of the secret containing cloud-init user data.
   optional string user_data_secret_ref = 11;
+
+  // Optional list of network attachments connecting this instance to OSAC
+  // Subnets. Each entry attaches the VM to a Subnet and optionally applies
+  // SecurityGroups for traffic control. An empty list results in default
+  // networking behavior.
+  repeated NetworkAttachment network_attachments = 12;
+}
+
+// Defines a network connection for a ComputeInstance to an OSAC Subnet,
+// with optional SecurityGroup references for traffic control.
+message NetworkAttachment {
+  // Name of a Subnet resource within the tenant's VirtualNetwork.
+  string subnet = 1;
+
+  // Optional list of SecurityGroup names to apply to this network attachment.
+  // All SecurityGroups must belong to the same VirtualNetwork as the
+  // referenced Subnet.
+  repeated string security_groups = 2;
 }
 
 message ComputeInstanceStatus {
@@ -112,4 +130,5 @@ enum ComputeInstanceConditionType {
   COMPUTE_INSTANCE_CONDITION_TYPE_AVAILABLE = 2;
   COMPUTE_INSTANCE_CONDITION_TYPE_RESTART_IN_PROGRESS = 3;
   COMPUTE_INSTANCE_CONDITION_TYPE_RESTART_FAILED = 4;
+  COMPUTE_INSTANCE_CONDITION_TYPE_NETWORK_ATTACHED = 5;
 }
